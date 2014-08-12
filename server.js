@@ -3,13 +3,13 @@ var express    = require('express'); 		// call express
 var app        = express(); 				// define our app using express
 var bodyParser = require('body-parser');
 var router = express.Router();              // get an instance of the express Router
-
+var port = process.env.PORT || 8080;        // set our port
+var news = require('./news');
 
 // configure app to use bodyParser()
 // this will let us get the data from a POST
 app.use(bodyParser());
 
-var port = process.env.PORT || 8080; 		// set our port
 
 // ROUTES FOR OUR API
 
@@ -17,10 +17,8 @@ router.route('/news/:news_id')
 
 	.get(function(req, res) {
 
-		var news = require('./news');
-
         console.log('STATUS: ' + res.statusCode);
-        
+
         news.getNews(req.params.news_id, function(article, image) {
             res.set('Content-Type', 'utf8');
             res.json({
@@ -30,6 +28,18 @@ router.route('/news/:news_id')
         });
 
 	});
+
+router.route('/news')
+
+    .get(function(req, res) {
+
+        console.log('STATUS: ' + res.statusCode);
+
+        news.getNewsList(function(lists) {
+            res.set('Content-Type', 'utf8');
+            res.json(lists);
+        });
+    });
 
 
 // more routes for our API will happen here
