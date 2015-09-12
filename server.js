@@ -11,7 +11,7 @@ var news = require('./news');
 app.use(bodyParser());
 
 
-// ROUTES FOR OUR API
+// ROUTES FOR THE API
 
 router.route('/news/:news_id')
 
@@ -34,7 +34,7 @@ router.route('/news')
     .get(function(req, res) {
 
         console.log('STATUS: ' + res.statusCode);
-
+        
         news.getNewsList(function(lists) {
             res.set('Content-Type', 'utf8');
             res.json(lists);
@@ -44,7 +44,7 @@ router.route('/news')
 
 // more routes for our API will happen here
 
-// REGISTER OUR ROUTES -------------------------------
+// REGISTER THE ROUTES -------------------------------
 // all of our routes will be prefixed with /api
 app.use('/api', router);
 

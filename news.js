@@ -1,14 +1,15 @@
-var behindwoodsNewsURL = '/tamil-movies-cinema-news-14/',
-behindwoodsURL = 'www.behindwoods.com',
-http = require('http'),
-jsdom = require('jsdom'),
-_ = require('lodash'),
-article,
-articleImg,
-headers = {
-    'Content-type': 'text/html; charset=utf-8'
-}
-output = '';
+var behindwoodsNewsURL = '/tamil-movies-cinema-news-15/',
+    behindwoodsURL = 'www.behindwoods.com',
+    http = require('http'),
+    jsdom = require('jsdom'),
+    _ = require('lodash'),
+    article,
+    articleImg,
+    headers = {
+        'Content-type': 'text/html; charset=utf-8'
+    }
+    output = '',
+    mysql = require('mysql');
 
 exports.getNewsList = function(callback) {
     var newsURL = behindwoodsNewsURL + 'cinema-news.html',
@@ -53,6 +54,7 @@ exports.getNewsList = function(callback) {
     });
 
     newsReq.on('error', function(e) {
+        console.log('hi');
         console.log('problem with request: ' + e.message);
     });
 
@@ -64,6 +66,7 @@ exports.getNews = function(id, callback) {
     var newsURL = id,
 
     output = '',
+
 
     options = {
         hostname: 'www.behindwoods.com',
@@ -80,15 +83,14 @@ exports.getNews = function(id, callback) {
         });
 
         newsRes.on('end', function() {
+            console.log('received the page');
             jsdom.env(
                 output,
                 ["http://code.jquery.com/jquery.js"],
                 function(errors, window) {
-                    var $box, $img;
-                    $box = window.$('.float .top_margin_8 > .top_margin_8'); $box = $box.remove('.addthis_toolbox');
-                    $box = $box.remove('h1');
-                    $img = window.$('.float .top_margin_8 img');
-                    article = $box.text(); 
+                    var $img, article, articleImg;
+                    $img = window.$('img[itemprop=\'contentURL\']');
+                    article = window.$('span[itemprop=\'articleBody\']').text(); 
                     articleImg = $img.attr('src');
                     callback(article, articleImg);
             });
@@ -97,6 +99,7 @@ exports.getNews = function(id, callback) {
 
     newsReq.on('error', function(e) {
         console.log('problem with request: ' + e.message);
+        console.log(e);
     });
 
     console.log(id);
