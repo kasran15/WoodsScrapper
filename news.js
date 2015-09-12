@@ -39,6 +39,7 @@ exports.getNewsList = function(callback) {
                 output,
                 ["http://code.jquery.com/jquery.js"],
                 function(errors, window) {
+                    console.log(errors);
                     var $box, $img;
                     $box = window.$('.float .col_418_box .box_400');
                     newsList = [];
