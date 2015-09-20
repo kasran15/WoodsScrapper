@@ -39,7 +39,8 @@ exports.getNewsList = function(callback) {
                 output,
                 ["http://code.jquery.com/jquery.js"],
                 function(errors, window) {
-                    console.log(errors);
+                    if (errors)
+                        console.log("Errors: " + errors);
                     var $box, $img;
                     $box = window.$('.float .col_418_box .box_400');
                     newsList = [];
@@ -55,7 +56,6 @@ exports.getNewsList = function(callback) {
     });
 
     newsReq.on('error', function(e) {
-        console.log('hi');
         console.log('problem with request: ' + e.message);
     });
 
