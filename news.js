@@ -1,6 +1,6 @@
 var behindwoodsNewsURL = '/tamil-movies-cinema-news-15/',
-    behindwoodsURL = 'www.behindwoods.com',
-    http = require('http'),
+    behindwoodsURL = 'http://www.behindwoods.com',
+    httpRequest = require('request'),
     jsdom = require('jsdom'),
     _ = require('lodash'),
     article,
@@ -48,40 +48,29 @@ exports.getNewsList = function(callback) {
         headers: {
             'Content-type': 'text/html; charset=utf-8'
         }
-    },
+    };
 
-    newsReq = http.request(options, function(newsRes) {
-        
-        newsRes.on('data', function (chunk) {
-            output += chunk;
-        });
+    httpRequest(behindwoodsURL + newsURL, function(error, response, body) {
+		console.log('response from bw: ' + body);
 
-        newsRes.on('end', function() {
-            jsdom.env(
-                output,
-                ["http://code.jquery.com/jquery.js"],
-                function(errors, window) {
-                    if (errors)
-                        console.log("Errors: " + errors);
-                    var $box, $img;
-                    $box = window.$('.float .col_418_box .box_400');
-                    newsList = [];
-                    links = $box.find('a');
+		jsdom.env(
+			body,
+			["http://code.jquery.com/jquery.js"],
+			function(errors, window) {
+				if (errors)
+					console.log("Errors: " + errors);
+				var $box, $img;
+				$box = window.$('.float .col_418_box .box_400');
+				newsList = [];
+				links = $box.find('a');
 
-                    _.each(links, function(link) {
-                        newsList.push(link.getAttribute('href'));
-                    })
+				_.each(links, function(link) {
+					newsList.push(link.getAttribute('href'));
+				})
 
-                    callback(newsList);
-            });
-        });
+				callback(newsList);
+		});
     });
-
-    newsReq.on('error', function(e) {
-        console.log('problem with request: ' + e.message);
-    });
-
-    newsReq.end();
 
 };
 
@@ -112,21 +101,20 @@ exports.getNews = function(id, callback) {
         }
 
 		console.log('Cache miss. id:' + newsURL);
-console.log(options);
-        newsReq = http.request(options, function(newsRes) {
-        
-            newsRes.on('data', function (chunk) {
-console.log(chunk);
-                output += chunk;
-            });
+console.log('request: ' + behindwoodsURL + '/' +  newsURL);
 
-            newsRes.on('end', function() {
-                console.log('received the page');
                 jsdom.env(
-                    output,
+                    behindwoodsURL + '/' + newsURL,
                     ["http://code.jquery.com/jquery.js"],
+					{
+						parsingMode: 'html',
+					},
                     function(errors, window) {
                         var $img, article, articleImg;
+						if (errors) {
+							console.log('error parsing the response body' + errors);
+							return;
+						}
 
                         $img = window.$('img[itemprop=\'contentURL\']');
                         article = window.$('span[itemprop=\'articleBody\']').text(); 
@@ -137,7 +125,6 @@ console.log(chunk);
                             'article': article,
                             'image': articleImg
                         });    
-
                         receivedNews.save(function(error){
                             if (error) {
                                 console.log('Error uh-oh ' + error);
@@ -147,16 +134,6 @@ console.log(chunk);
 
                         callback(article, articleImg);
                 });
-            });
 
-            newsReq.on('error', function(e) {
-                console.log('problem with request: ' + e.message);
-                console.log(e);
-            });
-
-            console.log(id);
-
-            newsReq.end();
-        });
     });
 };
