@@ -104,7 +104,7 @@ exports.getNews = function(id, callback) {
 console.log('request: ' + behindwoodsURL + '/' +  newsURL);
 
                 jsdom.env(
-                    behindwoodsURL + '/' + newsURL,
+                    behindwoodsURL +  newsURL,
                     ["http://code.jquery.com/jquery.js"],
 					{
 						parsingMode: 'html',
