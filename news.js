@@ -10,6 +10,7 @@ var behindwoodsNewsURL = '/tamil-movies-cinema-news-15/',
     }
     output = '',
     mongoose = require('mongoose'),
+	uriUtil = require('mongodb-uri'),
     newsSchema = mongoose.Schema({
         id: String,
         image: String,
@@ -18,11 +19,19 @@ var behindwoodsNewsURL = '/tamil-movies-cinema-news-15/',
         collection: 'newsCache'
     }),
     News = mongoose.model('News', newsSchema),
-    mongoose.connect('mongodb://bwoods:bwoods@ds051953.mongolab.com:51953/heroku_gv12hs9j', {}, 
-        function() {
-            console.log('connections');
-            console.log(arguments);
-    }); 
+	uri = 'mongodb://wood:wood@ds051953.mongolab.com:51953/heroku_gv12hs9j';
+
+
+mongoose.connect(uriUtil.formatMongoose(uri), { }, 
+
+	function(err) {
+		if (err) {
+			console.log('connection to db failed ');
+			console.log(arguments);
+		}
+}); 
+
+
 
 exports.getNewsList = function(callback) {
     var newsURL = behindwoodsNewsURL + 'cinema-news.html',
@@ -95,16 +104,19 @@ exports.getNews = function(id, callback) {
 
     newsReq;
 
-    cachedNews = News.findOne({id: newsURL}, function(err, res) {
+    cachedNews = News.findOne({"id": newsURL}, function(err, res) {
         if (res) {
             console.log('Cache hit. id:' + newsURL);
             callback(res.article, res.image);
             return;
         }
 
+		console.log('Cache miss. id:' + newsURL);
+console.log(options);
         newsReq = http.request(options, function(newsRes) {
         
             newsRes.on('data', function (chunk) {
+console.log(chunk);
                 output += chunk;
             });
 
