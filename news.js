@@ -1,6 +1,6 @@
 var behindwoodsNewsURL = '/tamil-movies-cinema-news-16/',
 	cinemaNewsURL = 'cinema-news.html',
-	$newsSelector = '.text-count-values',
+	$newsSelector = 'a[href*=\'tamil-movies-cinema-news-16\']:not(a[href$=\'cinema-news.html\'])',
     behindwoodsURL = 'http://www.behindwoods.com',
     httpRequest = require('request'),
     jsdom = require('jsdom'),
@@ -53,7 +53,7 @@ exports.getNewsList = function(callback) {
     };
 
     httpRequest(behindwoodsURL + newsURL, function(error, response, body) {
-		console.log('response from bw: ' + body);
+		console.log('response from bw: ');
 
 		jsdom.env(
 			body,
@@ -66,11 +66,11 @@ exports.getNewsList = function(callback) {
 				newsList = [];
 				links = $box.find('a');
 
-				_.each(links, function(link) {
+				_.each($box, function(link) {
 					newsList.push(link.getAttribute('href'));
 				})
 
-				callback(newsList);
+				callback(_.uniq(newsList));
 		});
     });
 
