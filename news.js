@@ -1,4 +1,6 @@
 var behindwoodsNewsURL = '/tamil-movies-cinema-news-16/',
+	cinemaNewsURL = 'cinema-news.html',
+	$newsSelector = '.text-count-values',
     behindwoodsURL = 'http://www.behindwoods.com',
     httpRequest = require('request'),
     jsdom = require('jsdom'),
@@ -34,7 +36,7 @@ mongoose.connect(uriUtil.formatMongoose(uri), { },
 
 
 exports.getNewsList = function(callback) {
-    var newsURL = behindwoodsNewsURL + 'cinema-news.html',
+    var newsURL = behindwoodsNewsURL + cinemaNewsURL,
 
     links,
 
@@ -60,7 +62,7 @@ exports.getNewsList = function(callback) {
 				if (errors)
 					console.log("Errors: " + errors);
 				var $box, $img;
-				$box = window.$('.float .col_418_box .box_400');
+				$box = window.$($newsSelector);
 				newsList = [];
 				links = $box.find('a');
 
@@ -80,7 +82,7 @@ exports.getNews = function(id, callback) {
     output = '',
 
     options = {
-        hostname: 'www.behindwoods.com',
+        hostname: 'www.behindwoods.com' + behindwoodsNewsURL,
         path: newsURL,
         headers: {
             'Content-type': 'text/html; charset=utf-8'
